@@ -1,0 +1,193 @@
+# Binary_Search_Tree_Code_-Through_C-
+
+#include<stdio.h>
+#include<iostream>
+using namespace std;
+
+struct Node
+{
+    Node *Right;
+    int Item;
+    Node *Left;
+};
+
+class BST
+{
+    private:
+        Node *Root;
+    protected:
+        void TraversPreRec(Node*);
+        void TraversInRec(Node*);
+        void TraversPostRec(Node*);
+        Node* DeleteRec(Node*,int);
+    public:
+        BST();
+        bool isEmpty();
+        void insert(int);
+        void PreorderTravers();
+        void InorderTravers();
+        void PostorderTravers();
+        void del(int);
+        Node* search(int);
+        ~BST();
+};
+void BST::TraversPreRec(Node *t)
+{
+    if(t)
+    {
+        cout<<t->Item<<" ";
+        TraversPreRec(t->Left);
+        TraversPreRec(t->Right);
+    }
+}
+
+void BST::TraversInRec(Node *t)
+{
+    if(t)
+    {
+        TraversInRec(t->Left);
+        cout<<t->Item<<" ";
+        TraversInRec(t->Right);
+    }
+}
+
+void BST::TraversPostRec(Node *t)
+{
+    if(t)
+    {
+        TraversPostRec(t->Left);
+        TraversPostRec(t->Right);
+        cout<<t->Item<<" ";
+    }
+}
+
+Node* BST::DeleteRec(Node *t, int value)
+{
+    if(t)
+    {
+        if(t->Item > value)
+            t->Left = DeleteRec(t->Left,value);
+        else if(t->Item < value)
+            t->Right = DeleteRec(t->Right, value);
+        else
+        {
+            if(t->Left == NULL && t->Right == NULL)
+            {
+                delete t;
+                return NULL;
+            }
+            else if(t->Left == NULL && t->Right != NULL)
+            {
+                Node *temp = t->Right;
+                delete t;
+                return temp;
+            }
+            else if(t->Left != NULL && t->Right == NULL)
+            {
+                Node *temp = t->Left;
+                delete t;
+                return temp;
+            }
+            else
+            {
+                Node *a, *b;
+                a = t;
+                b = t->Left;
+                while(b->Right)
+                {
+                    a = b;
+                    b = b->Right;
+                }
+                t->Item = b->Item;
+                if(a == t)
+                    a->Left = NULL;
+                else
+                    a->Right = NULL;
+                delete b;
+                return t;
+            }
+        }
+    }
+    else
+        return NULL;
+}
+
+BST::BST()
+{
+    Root = NULL;
+}
+
+bool BST::isEmpty()
+{
+    return Root == NULL;
+}
+
+void BST::insert(int value)
+{
+    Node *temp  = new Node;
+    temp->Item  = value;
+    temp->Right = NULL;
+    temp->Left  = NULL;
+    Node *t = Root;
+    if(Root == NULL)
+        Root = temp;
+    else
+        while(t)
+            if(t->Item == value)
+            {
+                cout<<"Duplicate item not Allow"<<endl;
+                break;
+            }
+            else if(t->Item > value)
+                if(t->Left == NULL) {
+                    t->Left = temp;
+                    break;
+                }
+                else
+                    t = t->Left;
+            else
+                if(t->Right == NULL) {
+                    t->Right = temp;
+                    break;
+                }
+                else
+                    t = t->Right;
+}
+
+void BST::PreorderTravers()
+{
+    TraversPreRec(Root);
+}
+
+void BST::InorderTravers()
+{
+    TraversInRec(Root);
+}
+
+void BST::PostorderTravers()
+{
+    TraversPostRec(Root);
+}
+void BST::del(int value)
+{
+    Root = DeleteRec(Root,value);
+}
+
+Node* BST::search(int value)
+{
+    Node *t = Root;
+    while(t)
+        if(t->Item == value)
+            return t;
+        else if(t->Item > value)
+            t = t->Left;
+        else
+            t = t->Right;
+    return NULL;
+}
+
+BST::~BST()
+{
+    while(Root)
+        del(Root->Item);
+}
